@@ -1,0 +1,7 @@
+{#- Expects: entry_pages -#}
+<entry-list>
+  {%- for p in entry_pages %}
+  {%- set card_page = p %}
+  {%- include "partials/blog-card.html" %}
+  {%- endfor %}
+</entry-list>

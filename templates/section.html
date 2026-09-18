@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+<page-heading>
+  <h1>{{ section.title }}</h1>
+  {%- if section.description %}<p>{{ section.description }}</p>{% endif %}
+</page-heading>
+{%- if section.content %}
+<prose-content>{{ section.content | safe }}</prose-content>
+{%- endif %}
+{% endblock content %}

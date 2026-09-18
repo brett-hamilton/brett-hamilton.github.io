@@ -1,0 +1,37 @@
+{#- The author / date / tag row under a post title.
+    Expects: meta_page, meta_prefix ("entry" or "post"), meta_link (bool). -#}
+{%- set meta_authors = meta_page.taxonomies.authors | default(value=[]) -%}
+{%- set meta_tags = meta_page.taxonomies.tags | default(value=[]) -%}
+{%- set known_authors = config.extra.authors | default(value=[]) -%}
+
+{%- if meta_authors | length > 0 -%}
+{%- set_global meta_avatars = 0 -%}
+{%- for name in meta_authors -%}{%- for a in known_authors -%}
+  {%- if a.name == name and a.avatar %}{% set_global meta_avatars = meta_avatars + 1 %}{% endif -%}
+{%- endfor -%}{%- endfor %}
+<{{ meta_prefix }}-authors>
+  {%- if meta_avatars > 0 %}
+  <author-avatars>
+    {%- for name in meta_authors -%}{%- for a in known_authors -%}
+    {%- if a.name == name and a.avatar %}
+    <img src="{{ get_url(path=a.avatar) | safe }}" alt="{{ a.name }}" width="18" height="18" loading="lazy">
+    {%- endif -%}
+    {%- endfor -%}{%- endfor %}
+  </author-avatars>
+  {%- endif %}
+  <author-names>
+    {%- for name in meta_authors -%}
+    {%- if not loop.first %}, {% endif -%}
+    {%- if meta_link %}<a href="{{ get_taxonomy_url(kind='authors', name=name) | safe }}">{{ name }}</a>{% else %}{{ name }}{% endif -%}
+    {%- endfor -%}
+  </author-names>
+</{{ meta_prefix }}-authors>
+{%- endif %}
+<time datetime="{{ meta_page.date }}">{{ meta_page.date | date(format="%b %-d, %Y") }}</time>
+{%- if meta_tags | length > 0 %}
+<{{ meta_prefix }}-tags>
+  {%- for tag in meta_tags %}
+  <a href="{{ get_taxonomy_url(kind='tags', name=tag) | safe }}">#{{ tag }}</a>
+  {%- endfor %}
+</{{ meta_prefix }}-tags>
+{%- endif %}

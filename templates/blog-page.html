@@ -1,9 +1,35 @@
 {% extends "base.html" %}
 
+{% block toc %}
+{%- if page.toc | length > 0 %}{% include "partials/toc.html" %}{% endif %}
+{% endblock toc %}
+
+{% block actions %}{% include "partials/post-actions.html" %}{% endblock actions %}
+
 {% block content %}
-<h1 class="title">
-  {{ page.title }}
-</h1>
-<p class="subtitle"><strong>{{ page.date }}</strong></p>
-{{ page.content | safe }}
+<button data-icon-button data-scroll-top data-floating aria-label="Scroll to top">
+  {{- load_data(path="static/icons/arrow-up.svg", format="plain") | trim | safe -}}
+</button>
+<article>
+  <header>
+    <h1>{{ page.title }}</h1>
+    <post-meta>
+      {%- set meta_page = page %}{% set meta_prefix = "post" %}{% set meta_link = true %}
+      {%- include "partials/post-meta.html" -%}
+    </post-meta>
+    {%- if page.description %}
+    <p>{{ page.description }}</p>
+    {%- endif %}
+  </header>
+  {%- if page.extra.image %}
+  <post-banner>
+    <img src="{{ get_url(path=page.extra.image) | safe }}" alt="{{ page.title }}" width="1200" height="630">
+  </post-banner>
+  {%- endif %}
+  <prose-content>{{ page.content | safe }}</prose-content>
+</article>
 {% endblock content %}
+
+{% block scripts %}
+<script src="{{ get_url(path='js/toc.js') | safe }}" defer></script>
+{% endblock scripts %}

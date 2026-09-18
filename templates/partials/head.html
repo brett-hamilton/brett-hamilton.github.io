@@ -1,0 +1,105 @@
+{%- set site_title = config.title | default(value="Blog") -%}
+{%- set site_desc = config.description | default(value="") -%}
+
+{%- if page -%}
+  {%- set_global head_title = page.title -%}
+  {%- set_global head_desc = page.description | default(value=site_desc) -%}
+  {%- set_global head_url = page.permalink -%}
+{%- elif term -%}
+  {%- if taxonomy.name == "tags" -%}
+    {%- set_global head_title = "#" ~ term.name -%}
+    {%- set_global head_desc = "Posts tagged " ~ term.name ~ "." -%}
+  {%- else -%}
+    {%- set_global head_title = term.name -%}
+    {%- set_global head_desc = "Posts by " ~ term.name ~ "." -%}
+  {%- endif -%}
+  {%- set_global head_url = term.permalink -%}
+{%- elif taxonomy -%}
+  {%- set_global head_title = taxonomy.name | title -%}
+  {%- set_global head_desc = "All " ~ taxonomy.name ~ " on " ~ site_title ~ "." -%}
+  {%- set_global head_url = config.base_url -%}
+{%- elif section -%}
+  {%- set_global head_title = section.title | default(value=site_title) -%}
+  {%- set_global head_desc = section.description | default(value=site_desc) -%}
+  {%- set_global head_url = section.permalink -%}
+{%- else -%}
+  {%- set_global head_title = site_title -%}
+  {%- set_global head_desc = site_desc -%}
+  {%- set_global head_url = config.base_url -%}
+{%- endif -%}
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <meta name="generator" content="Zola">
+
+  <title>{% if head_title == site_title %}{{ site_title }}{% else %}{{ head_title }} | {{ site_title }}{% endif %}</title>
+  <meta name="description" content="{{ head_desc }}">
+
+  <meta name="HandheldFriendly" content="True">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="{{ site_title }}">
+  <meta name="format-detection" content="telephone=no,date=no,address=no,email=no,url=no">
+
+  <meta name="theme-color" content="#111111" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#fcfcfc" media="(prefers-color-scheme: light)">
+
+  <link rel="canonical" href="{{ head_url | safe }}">
+
+  <meta property="og:type" content="{% if page %}article{% else %}website{% endif %}">
+  <meta property="og:site_name" content="{{ site_title }}">
+  <meta property="og:title" content="{{ head_title }}">
+  <meta property="og:description" content="{{ head_desc }}">
+  <meta property="og:url" content="{{ head_url | safe }}">
+  {%- if page and page.extra.image %}
+  <meta property="og:image" content="{{ get_url(path=page.extra.image) | safe }}">
+  {%- elif config.extra.default_image %}
+  <meta property="og:image" content="{{ get_url(path=config.extra.default_image) | safe }}">
+  {%- endif %}
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ head_title }}">
+  <meta name="twitter:description" content="{{ head_desc }}">
+
+  <link rel="icon" type="image/svg+xml" href="{{ get_url(path='favicon.svg') | safe }}">
+  {%- if config.generate_feeds %}
+  {%- for feed in config.feed_filenames %}
+  <link rel="alternate" type="application/{% if feed is starting_with(pat='atom') %}atom{% else %}rss{% endif %}+xml" title="{{ site_title }}" href="{{ get_url(path=feed) | safe }}">
+  {%- endfor %}
+  {%- endif %}
+
+  <link rel="preload" href="{{ get_url(path='fonts/IBMPlexSans.woff2') | safe }}" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="{{ get_url(path='fonts/IBMPlexSans-Italic.woff2') | safe }}" as="font" type="font/woff2" crossorigin>
+
+  {%- set stylesheets = [
+    "css/reset.css",
+    "css/fonts.css",
+    "css/color.css",
+    "css/typography.css",
+    "css/typography-headings.css",
+    "css/typography-inline.css",
+    "css/typography-lists.css",
+    "css/typography-block.css",
+    "css/typography-tables.css",
+    "css/callout.css",
+    "css/code.css",
+    "css/layout.css",
+    "css/shape.css",
+    "css/bar.css",
+    "css/icon-button.css",
+    "css/components.css"
+  ] %}
+  {%- for sheet in stylesheets %}
+  <link rel="stylesheet" href="{{ get_url(path=sheet) | safe }}">
+  {%- endfor %}
+
+  <script>
+    // Applied before first paint so the toggled theme never flashes.
+    try {
+      const theme = localStorage.theme
+      if (theme === "light" || theme === "dark")
+        document.documentElement.dataset.theme = theme
+    } catch {}
+  </script>
+</head>

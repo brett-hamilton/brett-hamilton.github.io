@@ -1,8 +1,29 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1 class="title">
-  This is my blog made with Zola.
-</h1>
-<p><a href="{{ get_url(path='@/blog/_index.md') }}">Posts</a>.</p>
+{%- set d = section.extra.dictionary | default(value=false) %}
+{%- if d %}
+<dictionary-entry>
+  <h1>{{ d.word }}</h1>
+  <etymology-span>
+    {%- if d.ipa %}<ipa-span>{{ d.ipa }}</ipa-span>{% endif %}
+    {{ d.etymology | safe }}
+  </etymology-span>
+  {%- if d.senses %}
+  <ol>
+    {%- for sense in d.senses %}
+    <li>{{ sense | safe }}</li>
+    {%- endfor %}
+  </ol>
+  {%- endif %}
+  <hr>
+  <prose-content>{{ section.content | safe }}</prose-content>
+</dictionary-entry>
+{%- else %}
+<page-heading>
+  <h1>{{ section.title | default(value=config.title) }}</h1>
+  {%- if section.description %}<p>{{ section.description }}</p>{% endif %}
+</page-heading>
+<prose-content>{{ section.content | safe }}</prose-content>
+{%- endif %}
 {% endblock content %}

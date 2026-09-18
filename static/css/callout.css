@@ -1,0 +1,167 @@
+/*
+ * Callouts, ported from astro-erudite.
+ *
+ * Two authoring paths produce the same look:
+ *   1. Native GitHub alerts (`> [!NOTE]`), enabled via `github_alerts` in
+ *      zola.toml. Zola emits a bare `blockquote.markdown-alert-*`, so the
+ *      icon + title row is drawn with grid-placed pseudo-elements.
+ *   2. The `callout` shortcode, which emits erudite's real `<details
+ *      data-callout>` markup and can be collapsed.
+ */
+
+prose-content {
+  /* Default accent lives here, at a lower specificity than the per-variant
+     rules below, so those always win. */
+  --accent: var(--muted-foreground);
+
+  :is(blockquote[class*="markdown-alert-"], [data-callout]) {
+    --callout-border: var(--accent);
+    --callout-text: light-dark(
+      oklch(from var(--accent) 0.48 calc(c * 1.05) h),
+      oklch(from var(--accent) 0.83 calc(c * 0.5) h)
+    );
+
+    position: relative;
+    padding-block: 0.75rem;
+    padding-inline: 1rem 0;
+    border-inline-start: 4px solid var(--callout-border);
+    color: var(--prose-foreground);
+
+    > :last-child {
+      margin-block-end: 0;
+    }
+  }
+
+  /* ---- 1. Native GitHub alerts ---------------------------------------- */
+
+  blockquote[class*="markdown-alert-"] {
+    display: grid;
+    grid-template-columns: 1.25rem 1fr;
+    column-gap: 0.5rem;
+    align-items: center;
+
+    &::before {
+      grid-area: 1 / 1;
+      content: "";
+      inline-size: 1.25rem;
+      block-size: 1.25rem;
+      background-color: var(--callout-text);
+      mask: var(--callout-icon) center / contain no-repeat;
+    }
+
+    &::after {
+      grid-area: 1 / 2;
+      content: var(--callout-label);
+      font-weight: var(--font-weight-medium);
+      color: var(--callout-text);
+    }
+
+    > * {
+      grid-column: 2;
+      color: var(--prose-foreground);
+    }
+
+    > :first-child {
+      margin-block-start: 0.75rem;
+    }
+  }
+
+  .markdown-alert-note {
+    --callout-label: "Note";
+    --callout-icon: url("../icons/callouts/info-circle.svg");
+  }
+
+  .markdown-alert-tip {
+    --callout-label: "Tip";
+    --callout-icon: url("../icons/callouts/lightbulb.svg");
+  }
+
+  .markdown-alert-important {
+    --callout-label: "Important";
+    --callout-icon: url("../icons/callouts/bell.svg");
+  }
+
+  .markdown-alert-warning {
+    --callout-label: "Warning";
+    --callout-icon: url("../icons/callouts/danger-triangle.svg");
+  }
+
+  .markdown-alert-caution {
+    --callout-label: "Caution";
+    --callout-icon: url("../icons/callouts/shield-warning.svg");
+  }
+
+  /* ---- 2. The `callout` shortcode -------------------------------------- */
+
+  [data-callout] {
+    > summary {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      list-style: none;
+      font-weight: var(--font-weight-medium);
+      color: var(--callout-text);
+
+      &::-webkit-details-marker {
+        display: none;
+      }
+
+      :is(strong, b) {
+        color: inherit;
+      }
+
+      svg {
+        flex-shrink: 0;
+        inline-size: 1.25rem;
+        block-size: 1.25rem;
+      }
+
+      svg:first-child {
+        margin-inline-end: 0.5rem;
+      }
+
+      svg:last-child {
+        margin-inline-start: auto;
+      }
+
+      > span {
+        margin-inline-end: 0.5rem;
+
+        > span {
+          font-weight: var(--font-weight-normal);
+          opacity: 0.7;
+        }
+      }
+    }
+
+    &[open] > summary {
+      margin-block-end: 0.75rem;
+
+      svg:last-child {
+        rotate: 180deg;
+      }
+    }
+
+    /* Non-foldable callouts still render the summary, minus the affordance. */
+    &:not([data-foldable]) > summary {
+      cursor: default;
+      margin-block-end: 0.75rem;
+
+      svg:last-child {
+        display: none;
+      }
+    }
+
+    :is(p, li) {
+      color: var(--prose-foreground);
+    }
+  }
+
+  /* ---- Accents (shared) ------------------------------------------------ */
+
+  :is(.markdown-alert-note,      [data-callout="note"])      { --accent: #0090ff; }
+  :is(.markdown-alert-tip,       [data-callout="tip"])       { --accent: #30a46c; }
+  :is(.markdown-alert-warning,   [data-callout="warning"])   { --accent: #ffc53d; }
+  :is(.markdown-alert-caution,   [data-callout="caution"])   { --accent: #e5484d; }
+  :is(.markdown-alert-important, [data-callout="important"]) { --accent: #8e4ec6; }
+}

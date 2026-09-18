@@ -1,17 +1,78 @@
-<!DOCTYPE html>
-<html lang="en">
+{%- set site_title = config.title | default(value="Blog") -%}
+{%- set here = current_path | default(value="/") -%}
+{%- set nav = config.extra.nav | default(value=[]) -%}
 
-<head>
-  <meta charset="utf-8">
-  <title>MyBlog</title>
-</head>
+{#- Breadcrumbs come from Zola's own context rather than being threaded down by
+    every template, so each page type gets them for free. -#}
+{%- set_global crumbs = [] -%}
+{%- if page -%}
+  {%- set_global crumbs = [{"name": page.title, "url": page.permalink}] -%}
+{%- elif term -%}
+  {%- set crumb_name = term.name -%}
+  {%- if taxonomy.name == "tags" %}{% set crumb_name = "#" ~ term.name %}{% endif -%}
+  {%- set_global crumbs = [{"name": crumb_name, "url": term.permalink}] -%}
+{%- endif -%}
+<!DOCTYPE html>
+<html lang="{{ config.default_language | default(value='en') }}" dir="ltr">
+{% include "partials/head.html" %}
 
 <body>
-  <section class="section">
-    <div class="container">
-      {% block content %} {% endblock content %}
-    </div>
-  </section>
+  <page-grid>
+    <page-header>
+      <page-nav>
+        <aside data-bar>
+          <sidebar-inner>
+            <a href="{{ config.base_url | safe }}" aria-label="{{ site_title }}">
+              {{- load_data(path="static/icons/logo.svg", format="plain") | trim | safe -}}
+              <span>{{ site_title }}</span>
+            </a>
+            <nav>
+              <ul>
+                {%- for item in nav %}
+                {%- set is_exact = here == item.url or here == item.url ~ "/" %}
+                {%- set in_section = here is starting_with(pat=item.url ~ "/") %}
+                <li>
+                  <a href="{{ get_url(path=item.url) | safe }}"{% if is_exact %} aria-current="page"{% endif %}>{{ item.name }}</a>
+                  {%- if in_section and crumbs | length > 0 %}
+                  <ul>
+                    {%- for crumb in crumbs %}
+                    <li{% if not loop.first %} data-depth="1"{% endif %}>
+                      <a href="{{ crumb.url | safe }}"{% if loop.last %} aria-current="page"{% endif %}>{{ crumb.name }}</a>
+                    </li>
+                    {%- endfor %}
+                  </ul>
+                  {%- endif %}
+                </li>
+                {%- endfor %}
+              </ul>
+            </nav>
+          </sidebar-inner>
+          <sidebar-toggle>
+            <button id="theme-toggle" data-icon-button aria-label="Toggle theme">
+              <light-icon>{{- load_data(path="static/icons/sun.svg", format="plain") | trim | safe -}}</light-icon>
+              <dark-icon>{{- load_data(path="static/icons/moon.svg", format="plain") | trim | safe -}}</dark-icon>
+            </button>
+            {% block actions %}{% endblock actions %}
+          </sidebar-toggle>
+        </aside>
+      </page-nav>
+      {% block toc %}{% endblock toc %}
+    </page-header>
+
+    <page-content>
+      <main>{% block content %}{% endblock content %}</main>
+      <page-footer>
+        <footer>
+          <p>&copy; {{ now() | date(format="%Y") }} {{ site_title }}</p>
+          {%- set social_links = config.extra.socials | default(value=[]) %}
+          {%- include "partials/social-icons.html" %}
+        </footer>
+      </page-footer>
+    </page-content>
+  </page-grid>
+
+  <script src="{{ get_url(path='js/main.js') | safe }}" defer></script>
+  {% block scripts %}{% endblock scripts %}
 </body>
 
 </html>

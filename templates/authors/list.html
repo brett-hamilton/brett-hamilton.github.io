@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+<page-heading>
+  <h1>Authors</h1>
+  <p>Everyone who has written here.</p>
+</page-heading>
+<author-list>
+  {%- for term in terms %}
+  {%- set author_name = term.name %}{% set author_current = false %}
+  {%- include "partials/author-card.html" %}
+  {%- endfor %}
+</author-list>
+{% endblock content %}

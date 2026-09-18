@@ -1,0 +1,146 @@
+/*
+ * Code blocks.
+ *
+ * astro-erudite uses Expressive Code; Zola uses syntect. This reproduces the
+ * Expressive Code frame (thin border, muted ground, filename tab, line
+ * numbers, copy button) on top of syntect's markup.
+ *
+ * Token colours come from Zola itself: `add_color_scheme = true` emits
+ * `light-dark(<light>, <dark>)` inline styles, so the palette follows the
+ * `color-scheme` that the theme toggle flips. Same mechanism erudite uses.
+ */
+
+prose-content {
+  .code-block {
+    position: relative;
+  }
+
+  pre.giallo {
+    /* syntect hardcodes the theme's own ground; erudite's is muted + sheer. */
+    background-color: color-mix(in oklab, var(--muted) 25%, transparent) !important;
+
+    overflow-x: auto;
+    border: 1.5px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    line-height: calc(var(--leading-offset) + 1em);
+    tab-size: 2;
+
+    &::-webkit-scrollbar-corner {
+      display: none;
+    }
+
+    > code {
+      display: block;
+      min-width: max-content;
+      padding-block: var(--space-2xs);
+      counter-reset: line;
+    }
+  }
+
+  /* ---- Filename tab ---------------------------------------------------- */
+
+  pre.giallo > code[data-name]::before {
+    content: attr(data-name);
+    position: sticky;
+    inset-inline-start: 0;
+    display: block;
+    margin-block: calc(-1 * var(--space-2xs)) var(--space-2xs);
+    padding: var(--space-3xs) var(--space-xs);
+    border-block-end: 1.5px solid var(--border);
+    font-family: var(--font-sans);
+    color: var(--muted-foreground);
+  }
+
+  /* ---- Lines and line numbers ------------------------------------------ */
+
+  .giallo-l {
+    display: inline-block;
+    min-width: 100%;
+    padding-inline: var(--space-xs);
+
+    &::before {
+      counter-increment: line;
+      content: counter(line);
+      display: inline-block;
+      inline-size: 2ch;
+      margin-inline-end: 1.5ch;
+      text-align: end;
+      color: var(--muted-foreground);
+      opacity: 0.6;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* A line carrying an inline style is one of `hl_lines`. */
+    &[style] {
+      box-shadow: inset 2px 0 0 var(--muted-foreground);
+    }
+  }
+
+  /* Prose-ish languages read better without a gutter, matching erudite. */
+  code:is(
+    [data-lang="ansi"], [data-lang="bat"], [data-lang="bash"],
+    [data-lang="batch"], [data-lang="cmd"], [data-lang="console"],
+    [data-lang="powershell"], [data-lang="ps"], [data-lang="ps1"],
+    [data-lang="sh"], [data-lang="shell"], [data-lang="shellscript"],
+    [data-lang="shellsession"], [data-lang="plain"], [data-lang="text"],
+    [data-lang="txt"], [data-lang="zsh"]
+  ) .giallo-l::before {
+    content: none;
+  }
+
+  /* ---- Copy button (added by /js/code.js) ------------------------------- */
+
+  .code-copy {
+    position: absolute;
+    inset-block-start: var(--space-3xs);
+    inset-inline-end: var(--space-3xs);
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 1.75rem;
+    block-size: 1.75rem;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    background-color: color-mix(in oklab, var(--background) 85%, transparent);
+    backdrop-filter: blur(var(--blur-sm));
+    color: var(--muted-foreground);
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+
+    svg {
+      inline-size: 0.875rem;
+      block-size: 0.875rem;
+    }
+
+    .code-copy-done {
+      display: none;
+    }
+
+    &[data-copied] {
+      color: var(--foreground);
+
+      .code-copy-idle {
+        display: none;
+      }
+
+      .code-copy-done {
+        display: block;
+      }
+    }
+  }
+
+  .code-block:is(:hover, :focus-within) .code-copy,
+  .code-copy:is(:focus-visible, [data-copied]) {
+    opacity: 1;
+  }
+
+  @media (hover: none) {
+    .code-copy {
+      opacity: 1;
+    }
+  }
+}

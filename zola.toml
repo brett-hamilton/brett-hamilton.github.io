@@ -1,16 +1,62 @@
 # The URL the site will be built for
 base_url = "https://brett-hamilton.github.io"
 
-# Whether to automatically compile all Sass files in the sass directory
-compile_sass = true
+title = "myblog"
+description = "A personal blog."
 
-# Whether to build a search index to be used later on by a JavaScript library
+default_language = "en"
+
+# All CSS is hand-written plain CSS in `static/css/`; nothing to compile.
+compile_sass = false
 build_search_index = false
 
+generate_feeds = true
+feed_filenames = ["rss.xml"]
+
+taxonomies = [
+  { name = "tags", feed = true },
+  { name = "authors", feed = true },
+]
+
 [markdown]
+# `> [!NOTE]` blockquotes become callouts (see static/css/callout.css).
+github_alerts = true
+smart_punctuation = true
+bottom_footnotes = true
+lazy_async_image = true
+external_links_target_blank = true
+external_links_no_referrer = true
+# Renders templates/anchor-link.html after each heading's text.
+insert_anchor_links = "right"
 
 [markdown.highlighting]
-theme = "catppuccin-mocha"
+# Zola emits `light-dark(<light>, <dark>)` inline colours, so code blocks
+# follow the same `color-scheme` switch as the rest of the theme.
+light_theme = "github-light"
+dark_theme = "github-dark"
+add_color_scheme = true
 
 [extra]
-# Put all your custom variables here
+# Sidebar navigation.
+nav = [
+  { name = "Blog", url = "/blog" },
+  { name = "Tags", url = "/tags" },
+  { name = "Authors", url = "/authors" },
+]
+
+# Footer links. `icon` names a file in static/icons/.
+socials = [
+  { name = "GitHub", url = "https://github.com/brett-hamilton", icon = "github" },
+  { name = "Email", url = "mailto:bretthamilton024@gmail.com", icon = "email" },
+  { name = "RSS", url = "/rss.xml", icon = "rss" },
+]
+
+# Author metadata, matched by `name` against the `authors` taxonomy.
+[[extra.authors]]
+name = "Brett Hamilton"
+avatar = "/img/avatar.svg"
+bio = "Writing about whatever I'm building."
+socials = [
+  { name = "GitHub", url = "https://github.com/brett-hamilton", icon = "github" },
+  { name = "Email", url = "mailto:bretthamilton024@gmail.com", icon = "email" },
+]

@@ -1,0 +1,33 @@
+{#- Sidebar table of contents. Expects: page.
+    Tera has no recursion, so the h2/h3/h4 nesting is unrolled. -#}
+<page-toc>
+  <nav aria-label="Table of contents">
+    <toc-title aria-hidden="true"><span>{{ page.title }}</span></toc-title>
+    <label data-bar>
+      <input type="checkbox" aria-label="Toggle table of contents">
+      <svg viewBox="0 0 16 16" aria-hidden="true">
+        <circle cx="8" cy="8" r="6.5" />
+        <circle cx="8" cy="8" r="6.5" transform="rotate(-90 8 8)" />
+      </svg>
+      <toc-current>{{ page.title }}</toc-current>
+      {{- load_data(path="static/icons/callouts/alt-arrow-down.svg", format="plain") | trim | safe -}}
+    </label>
+    <ul data-bar>
+      {%- for h1 in page.toc %}
+      {%- if h1.level >= 2 and h1.level <= 4 %}
+      <li data-depth="{{ h1.level }}"><a href="#{{ h1.id }}">{{ h1.title }}</a></li>
+      {%- endif %}
+      {%- for h2 in h1.children %}
+      {%- if h2.level >= 2 and h2.level <= 4 %}
+      <li data-depth="{{ h2.level }}"><a href="#{{ h2.id }}">{{ h2.title }}</a></li>
+      {%- endif %}
+      {%- for h3 in h2.children %}
+      {%- if h3.level >= 2 and h3.level <= 4 %}
+      <li data-depth="{{ h3.level }}"><a href="#{{ h3.id }}">{{ h3.title }}</a></li>
+      {%- endif %}
+      {%- endfor %}
+      {%- endfor %}
+      {%- endfor %}
+    </ul>
+  </nav>
+</page-toc>

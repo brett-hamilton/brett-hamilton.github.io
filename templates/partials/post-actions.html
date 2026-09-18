@@ -1,0 +1,12 @@
+{#- Prev/next arrows plus scroll-to-top, docked in the sidebar. Expects: page. -#}
+<post-actions>
+  <a {% if page.higher %}href="{{ page.higher.permalink | safe }}" aria-label="Previous post: {{ page.higher.title }}" title="{{ page.higher.title }}"{% else %}aria-hidden="true"{% endif %} data-icon-button data-dir="prev">
+    {{- load_data(path="static/icons/arrow-left.svg", format="plain") | trim | safe -}}
+  </a>
+  <a {% if page.lower %}href="{{ page.lower.permalink | safe }}" aria-label="Next post: {{ page.lower.title }}" title="{{ page.lower.title }}"{% else %}aria-hidden="true"{% endif %} data-icon-button data-dir="next">
+    {{- load_data(path="static/icons/arrow-right.svg", format="plain") | trim | safe -}}
+  </a>
+  <button data-icon-button data-scroll-top aria-label="Scroll to top">
+    {{- load_data(path="static/icons/arrow-up.svg", format="plain") | trim | safe -}}
+  </button>
+</post-actions>

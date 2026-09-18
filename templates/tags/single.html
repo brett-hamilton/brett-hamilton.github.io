@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+<page-heading>
+  <h1>#{{ term.name }}</h1>
+  <p>{{ term.pages | length }} post{% if term.pages | length != 1 %}s{% endif %} tagged &ldquo;{{ term.name }}&rdquo;.</p>
+</page-heading>
+{%- set entry_pages = term.pages %}
+{%- include "partials/entry-list.html" %}
+{% endblock content %}

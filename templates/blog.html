@@ -1,14 +1,17 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1 class="title">
-  {{ section.title }}
-</h1>
-<ul>
-  <!-- If you are using pagination, section.pages will be empty.
-       You need to use the paginator object -->  
-  {% for page in section.pages %}
-  <li><a href="{{ page.permalink | safe }}">{{ page.title }}</a></li>
-  {% endfor %}
-</ul>
+{%- if paginator is defined %}
+{%- set entry_pages = paginator.pages %}
+{%- else %}
+{%- set entry_pages = section.pages %}
+{%- endif %}
+{%- include "partials/entry-list.html" %}
+{%- if paginator is defined and paginator.number_pagers > 1 %}
+<pager-nav>
+  {%- if paginator.previous %}<a href="{{ paginator.previous | safe }}">&larr; Newer</a>{% endif %}
+  <span>{{ paginator.current_index }} / {{ paginator.number_pagers }}</span>
+  {%- if paginator.next %}<a href="{{ paginator.next | safe }}">Older &rarr;</a>{% endif %}
+</pager-nav>
+{%- endif %}
 {% endblock content %}

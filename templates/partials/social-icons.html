@@ -1,0 +1,14 @@
+{#- Expects: social_links = [{ name, url, icon }] -#}
+{%- if social_links | length > 0 %}
+<social-icons>
+  <ul>
+    {%- for social in social_links %}
+    <li>
+      <a href="{{ social.url | safe }}" data-icon-button {% if social.url is starting_with(pat="http") %}target="_blank" rel="noopener noreferrer" {% endif %}aria-label="{{ social.name }}" title="{{ social.name }}">
+        {{- load_data(path="static/icons/" ~ social.icon ~ ".svg", format="plain") | trim | safe -}}
+      </a>
+    </li>
+    {%- endfor %}
+  </ul>
+</social-icons>
+{%- endif %}

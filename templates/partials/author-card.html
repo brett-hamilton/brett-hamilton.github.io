@@ -1,0 +1,30 @@
+{#- Expects: author_name, author_current (bool). -#}
+{%- set_global author_info = false -%}
+{%- for a in config.extra.authors | default(value=[]) -%}
+  {%- if a.name == author_name %}{% set_global author_info = a %}{% endif -%}
+{%- endfor -%}
+{%- set author_url = get_taxonomy_url(kind="authors", name=author_name) -%}
+<li>
+  {%- if author_info and author_info.avatar %}
+  {%- if author_current %}
+  <img src="{{ get_url(path=author_info.avatar) | safe }}" alt="{{ author_name }}" width="64" height="64">
+  {%- else %}
+  <a href="{{ author_url | safe }}" tabindex="-1" aria-hidden="true">
+    <img src="{{ get_url(path=author_info.avatar) | safe }}" alt="" width="64" height="64">
+  </a>
+  {%- endif %}
+  {%- endif %}
+  <author-info>
+    <author-name>
+      {%- if author_current %}{{ author_name }}{% else %}<a href="{{ author_url | safe }}">{{ author_name }}</a>{% endif -%}
+      {%- if author_info and author_info.pronouns %}<author-pronouns>{{ author_info.pronouns }}</author-pronouns>{% endif %}
+    </author-name>
+    {%- if author_info and author_info.bio %}
+    <p>{{ author_info.bio }}</p>
+    {%- endif %}
+    {%- if author_info and author_info.socials %}
+    {%- set social_links = author_info.socials %}
+    {%- include "partials/social-icons.html" %}
+    {%- endif %}
+  </author-info>
+</li>

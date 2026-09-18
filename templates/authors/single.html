@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+<author-list>
+  {%- set author_name = term.name %}{% set author_current = true %}
+  {%- include "partials/author-card.html" %}
+</author-list>
+<author-divider role="separator"></author-divider>
+{%- set entry_pages = term.pages %}
+{%- include "partials/entry-list.html" %}
+{% endblock content %}

@@ -1,0 +1,18 @@
+{#- One row in a post listing — erudite's BlogCard. Expects: card_page. -#}
+<li>
+  {%- if card_page.extra.image %}
+  <a href="{{ card_page.permalink | safe }}" tabindex="-1" aria-hidden="true">
+    <img src="{{ get_url(path=card_page.extra.image) | safe }}" alt="" width="640" height="336" loading="lazy">
+  </a>
+  {%- endif %}
+  <entry-info>
+    <a href="{{ card_page.permalink | safe }}">{{ card_page.title }}</a>
+    <entry-meta>
+      {%- set meta_page = card_page %}{% set meta_prefix = "entry" %}{% set meta_link = false %}
+      {%- include "partials/post-meta.html" -%}
+    </entry-meta>
+    {%- if card_page.description %}
+    <p>{{ card_page.description }}</p>
+    {%- endif %}
+  </entry-info>
+</li>
