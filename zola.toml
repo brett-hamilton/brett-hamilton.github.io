@@ -1,7 +1,7 @@
 # The URL the site will be built for
 base_url = "https://brett-hamilton.github.io"
 
-title = "myblog"
+title = "Brett Hamilton"
 description = "A personal blog."
 
 default_language = "en"
